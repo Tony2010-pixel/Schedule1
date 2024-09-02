@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Day Score Schedule</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #003366, #00509e);
+            color: rgb(255, 255, 255);
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            height: 500px;
+            background:white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #003366;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            background: #80c8ff; /* Light blue background */
+            color: #ffffff; /* White text */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+        }
+        button:hover {
+            background: #66b3ff; /* Slightly darker blue on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+        button:active {
+            transform: translateY(0); /* Reset lift effect */
+        }
+        button i {
+            margin-right: 8px; /* Space between icon and text */
+        }
+        #modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-content {
+            background-color: rgb(255, 255, 255);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            text-align: left;
+        }
+        tbody tr td {
+            padding: 10px;
+        }
+        input[type="number"], input[type="number"] {
+            width: 400px;
+            padding: 10px;
+            border: 2px solid #00509e;
+            border-radius: 5px;
+            max-width: 100px;
+        }
+        .login-container {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .name {
+            color: black;
+        }
+        #scoresContainer {
+            display: none;
+            text-align: left;
+            margin-top: 20px;
+        }
+        #tonySumContainer, #avroniaSumContainer, #marinaSumContainer {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #003366;
+        }
+        .reset-button {
+            background: #c9302c; /* Dark red for reset */
+        }
+        .reset-button:hover {
+            background: #a61e24; /* Darker red on hover */
+        }
+        .sum-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .whatsapp-button {
+            background: #25D366; /* WhatsApp color */
+        }
+        .whatsapp-button:hover {
+            background: #128C7E; /* Darker WhatsApp color on hover */
+        }
+        .button-center {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Optional: add spacing above the buttons */
+        }
+        .reset-button, .whatsapp-button {
+            margin: 0 10px; /* Optional: add spacing between buttons */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Month System</h1>
+        <button id="toggleLang"><i class="fas fa-globe"></i> Switch to Arabic</button>
+        <div class="login-container" id="loginContainer">
+            <input type="password" id="password" placeholder="Enter 4-digit Password" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g,'');" style="letter-spacing: 5px;" />
+            <button onclick="login()">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <div id="loginMessage" style="color: red;"></div>
+
+
+    
+    
+
+         
+        
+        </div>
+        <div class="button-container hidden" id="buttonContainer"></div>
+        <div id="modal" class="hidden">
+            <div class="modal-content">
+                <span onclick="closeModal()" style="cursor:pointer; float:right; font-size:20px;">&times;</span>
+                <h2 id="modalTitle"><i class="fas fa-pencil-alt"></i> Enter Scores for Day</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="name" id="tonyHeader">Tony</th>
+                            <th class="name" id="marinaHeader">Marina</th>
+                            <th class="name" id="avroniaHeader">Avronia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody"></tbody>
+                </table>
+                <button onclick="submitScores()">
+                    <i class="fas fa-paper-plane"></i> Submit Scores
+                </button>
+                <div class="sum-buttons">
+                    <button onclick="showTonySum()" ondblclick="hideTonySum()">
+                        <i class="fas fa-calculator"></i> Sum for Tony
+                    </button>
+                    <button onclick="showMarinaSum()" ondblclick="hideMarinaSum()">
+                        <i class="fas fa-calculator"></i> Sum for Marina
+                    </button>
+                    <button onclick="showAvroniaSum()" ondblclick="hideAvroniaSum()">
+                        <i class="fas fa-calculator"></i> Sum for Avronia
+                    </button>
+                </div>
+                <div id="tonySumContainer"></div>
+                <div id="avroniaSumContainer"></div>
+                <div id="marinaSumContainer"></div>
+                <div class="button-center">
+                    <button class="reset-button" onclick="resetData()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button class="whatsapp-button" onclick="openWhatsApp()" aria-label="Contact via WhatsApp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="scoresContainer">
+            <h3 id="scoresHeader">Submitted Scores:</h3>
+            <div id="scoresContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const buttonContainer = document.getElementById('buttonContainer');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const scoreTableBody = document.getElementById('scoreTableBody');
+        const scoresContainer = document.getElementById('scoresContainer');
+        const scoresContent = document.getElementById('scoresContent');
+        const tonySumContainer = document.getElementById('tonySumContainer');
+        const avroniaSumContainer = document.getElementById('avroniaSumContainer');
+        const marinaSumContainer = document.getElementById('marinaSumContainer');
+
+        let correctPassword = "8187"; 
+        let tonyScores = []; 
+        let avroniaScores = []; 
+        let marinaScores = []; 
+        let isArabic = false;
+
+        document.getElementById('toggleLang').onclick = toggleLanguage;
+
+        for (let day = 1; day <= 30; day++) {
+            const button = document.createElement('button');
+            button.textContent = `Day ${day}`;
+            button.onclick = () => openModal(day);
+            buttonContainer.appendChild(button);
+        }
+
+        function login() {
+            const password = document.getElementById('password').value;
+            if (password === correctPassword) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                buttonContainer.classList.remove('hidden');
+                document.getElementById('loginMessage').textContent = '';
+            } else {
+                document.getElementById('loginMessage').textContent = isArabic ? 'كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.' : 'Invalid password. Please try again.';
+            }
+        }
+
+        document.getElementById('password').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                login();
+            }
+        });
+
+        function openModal(day) {
+            modal.style.display = 'block';
+            modalTitle.textContent = `${isArabic ? 'أدخل الدرجات لليوم' : 'Enter Scores for Day'} ${day}`;
+            scoreTableBody.innerHTML = '';
+            tonySumContainer.innerHTML = '';
+            avroniaSumContainer.innerHTML = '';
+            marinaSumContainer.innerHTML = '';
+
+            const row = document.createElement('tr');
+            ['tony', 'marina', 'avronia'].forEach(participant => {
+                const cell = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `${participant}Score${day}`;
+                input.value = 0;
+                input.max = 10;
+                input.min = 0;
+                cell.appendChild(input);
+                row.appendChild(cell);
+            });
+            scoreTableBody.appendChild(row);
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function submitScores() {
+            let results = '';
+            for (let day = 1; day <= 30; day++) {
+                const tonyScore = document.getElementById(`tonyScore${day}`)?.value;
+                const avroniaScore = document.getElementById(`avroniaScore${day}`)?.value;
+                const marinaScore = document.getElementById(`marinaScore${day}`)?.value;
+
+                if (tonyScore || avroniaScore || marinaScore) {
+                    results += `${isArabic ? 'اليوم' : 'Day'} ${day}: Tony: ${tonyScore || 0}, Marina: ${marinaScore || 0}, Avronia: ${avroniaScore || 0}\n`;
+                    tonyScores[day - 1] = tonyScore ? parseInt(tonyScore) : 0;
+                    avroniaScores[day - 1] = avroniaScore ? parseInt(avroniaScore) : 0;
+                    marinaScores[day - 1] = marinaScore ? parseInt(marinaScore) : 0;
+                }
+            }
+
+            scoresContent.innerHTML = results;
+            scoresContainer.style.display = 'block'; 
+            closeModal();
+        }
+
+        function showTonySum() {
+            const total = tonyScores.reduce((acc, score) => acc + score, 0);
+            tonySumContainer.innerHTML = `${isArabic ? 'مجموع درجات توني:' : 'Sum of Tony\'s scores:'} ${total}`;
+        }
+
+        function showAvroniaSum() {
+            const total = avroniaScores.reduce((acc, score) => acc + score, 0);
+            avroniaSumContainer.innerHTML = `${isArabic ? 'مجموع درجات أفرونيا:' : 'Sum of Avronia\'s scores:'} ${total}`;
+        }
+
+        function showMarinaSum() {
+            const total = marinaScores.reduce((acc, score) => acc + score, 0);
+            marinaSumContainer.innerHTML = `${isArabic ? 'مجموع درجات مارينا:' : 'Sum of Marina\'s scores:'} ${total}`;
+        }
+
+        function hideTonySum() {
+            tonySumContainer.innerHTML = ''; 
+        }
+
+        function hideAvroniaSum() {
+            avroniaSumContainer.innerHTML = ''; 
+        }
+
+        function hideMarinaSum() {
+            marinaSumContainer.innerHTML = ''; 
+        }
+
+        function resetData() {
+            tonyScores = []; 
+            avroniaScores = []; 
+            marinaScores = []; 
+            scoresContent.innerHTML = ''; 
+            scoresContainer.style.display = 'none'; 
+            document.getElementById('password').value = ''; 
+            document.getElementById('loginContainer').classList.remove('hidden'); 
+            buttonContainer.classList.add('hidden'); 
+            modal.style.display = 'none'; 
+        }
+
+       
+        
+            // Existing code...
+        
+            function openWhatsApp() {
+                const phoneNumber = '+201281311919';
+                let message = isArabic ? 'مرحبًا، هذه هي الدرجات المقدمة:\n' : 'Hello, here are the submitted scores:\n';
+        
+                for (let day = 1; day <= 30; day++) {
+                    const tonyScore = tonyScores[day - 1] || 0;
+                    const avroniaScore = avroniaScores[day - 1] || 0;
+                    const marinaScore = marinaScores[day - 1] || 0;
+        
+                    if (tonyScore || avroniaScore || marinaScore) {
+                        message += `${isArabic ? 'اليوم' : 'Day'} ${day}: Tony: ${tonyScore}, Marina: ${marinaScore}, Avronia: ${avroniaScore}\n`;
+                    }
+                }
+        
+                const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
+            }
+        
+            // Existing code...
+        
+
+        function toggleLanguage() {
+            isArabic = !isArabic;
+
+            document.getElementById('title').textContent = isArabic ? 'نظام الشهر' : 'Month System';
+            document.getElementById('toggleLang').textContent = isArabic ? 'Switch to English' : 'Switch to Arabic';
+            document.getElementById('loginMessage').textContent = '';
+            document.getElementById('scoresHeader').textContent = isArabic ? 'الدرجات المقدمة:' : 'Submitted Scores:';
+            document.getElementById('tonyHeader').textContent = isArabic ? 'توني' : 'Tony';
+            document.getElementById('marinaHeader').textContent = isArabic ? 'مارينا' : 'Marina';
+            document.getElementById('avroniaHeader').textContent = isArabic ? 'أفرونيا' : 'Avronia';
+            document.getElementById('modalTitle').textContent = isArabic ? 'أدخل الدرجات لليوم' : 'Enter Scores for Day';
+            resetData(); // Resets the state on language toggle
+        }
+        
+           
+           
+        
+    </script>
+</body>
+</html>
